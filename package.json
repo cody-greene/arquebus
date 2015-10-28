@@ -1,0 +1,30 @@
+{
+  "name": "lite-queue",
+  "description": "Tiny framework for redis-persisted background jobs",
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": "cody-greene/lite-queue",
+  "engines": {"node": "^4.0.0"},
+  "files": ["lib/", "index.js"],
+  "eslintConfig": {
+    "extends": "./node_modules/eslint-config/eslintrc.yml",
+    "env": {
+      "browser": false,
+      "es6": true
+    }
+  },
+  "scripts": {
+    "peon": "node --harmony example/peon",
+    "foreman": "node --harmony example/foreman",
+    "enqueue": "node --harmony example/enqueue",
+    "test": "mocha --harmony"
+  },
+  "peerDependencies": {
+    "redis": "^2.3.0"
+  },
+  "devDependencies": {
+    "fakeredis": "~0.3.3",
+    "mocha": "^2.2.5",
+    "eslint-config": "cody-greene/eslint-config#v0.1.1"
+  }
+}
