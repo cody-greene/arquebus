@@ -5,7 +5,8 @@
   "license": "MIT",
   "repository": "cody-greene/lite-queue",
   "engines": {"node": "^4.0.0"},
-  "files": ["lib/", "index.js"],
+  "files": "lib/",
+  "main": "lib/index.js",
   "eslintConfig": {
     "extends": "./node_modules/eslint-config/eslintrc.yml",
     "env": {
