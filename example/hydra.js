@@ -2,7 +2,7 @@
 const redis = require('./redis-client')
 
 /**
- * Complete example of a lite-queue worker
+ * Complete example of a MultiWorker
  * node --harmony example/hydra.js
  */
 const worker = require('../lib/multi-worker')

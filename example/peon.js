@@ -2,7 +2,7 @@
 const redis = require('./redis-client')
 
 /**
- * Complete example of a lite-queue worker
+ * Complete example of a Worker
  * node --harmony example/peon.js
  */
 const worker = require('../lib/worker')

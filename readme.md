@@ -1,4 +1,4 @@
-### lite-queue
+### arquebus
 A tiny library for background workers with redis-persisted jobs.
 - Robust & consistent error handling
 - Less code means fewer bugs (statistically)
@@ -14,7 +14,7 @@ Like [resque](https://github.com/taskrabbit/node-resque) but with a few key diff
 - No plugin support
 
 ```javascript
-let lite = require('lite-queue')
+let arquebus = require('arquebus')
 let redis = require('redis').createClient()
 ```
 
@@ -38,7 +38,7 @@ Programmer errors are bugs in the program. These are things that can always be a
 - passed a "string" where an object was expected
 - passed an object where an IP address string was expected
 
-#### lite.enqueue(redis, opt, done)
+#### arquebus.enqueue(redis, opt, done)
 ```javascript
 /**
  * Post a new job for an active worker to execute
@@ -63,7 +63,7 @@ enqueue(redis, {queue:'hi', type:'ping', params: {
 }, console.log)
 ```
 
-#### lite.createWorker(opt)
+#### arquebus.createWorker(opt)
 ```javascript
 /**
  * Scalable background job runner. One job at a time.
@@ -82,7 +82,7 @@ enqueue(redis, {queue:'hi', type:'ping', params: {
  */
 ```
 
-#### lite.createMultiWorker(opt)
+#### arquebus.createMultiWorker(opt)
 ```javascript
 /**
  * Can run multiple jobs in parallel. Will back off when the event-loop becomes too slow.
@@ -125,7 +125,7 @@ let worker = createWorker({
  */
 ```
 
-#### lite.createScheduler(opt)
+#### arquebus.createScheduler(opt)
 ```javascript
 /**
  * Manages delayed jobs.
@@ -161,6 +161,6 @@ let scheduler = createScheduler({
 The test suite requires a disposable redis instance since `fakeredis` does not support the `eval` command
 ```sh
 docker run -dp 9031:6379 redis:3.0.6-alpine
-export REDIS_URI="redis://192.168.99.100:9031'
+export REDIS_URI="redis://192.168.99.100:9031"
 npm -s test [-- <mocha options>]
 ```

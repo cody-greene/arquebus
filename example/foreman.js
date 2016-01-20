@@ -2,7 +2,7 @@
 const redis = require('./redis-client')
 
 /**
- * Complete example of a lite-queue scheduler
+ * Complete example of a Scheduler
  * node --harmony example/foreman.js
  */
 const foreman = require('../lib/scheduler')

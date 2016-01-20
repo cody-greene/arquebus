@@ -1,9 +1,9 @@
 {
-  "name": "lite-queue",
+  "name": "arquebus",
   "description": "Tiny framework for redis-persisted background jobs",
   "version": "0.1.0",
   "license": "MIT",
-  "repository": "cody-greene/lite-queue",
+  "repository": "cody-greene/arquebus",
   "engines": {"node": "^4.0.0"},
   "files": "lib/",
   "main": "lib/index.js",
