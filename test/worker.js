@@ -108,6 +108,19 @@ describe('createWorker()', function () {
     })
   })
 
-  it('should accept no more than 1 job at a time')
+  it('should accept no more than 1 job at a time', function (done) {
+    const EXPECTED_TOTAL = 5
+    let count = 0
+    let total = 0
+    for (let index = 0; index < EXPECTED_TOTAL; ++index)
+      enqueue({queue: 'lo', type: 'sleep', params:{ duration: 20 }}, noop)
+    worker = createWorker({redis})
+    worker.on('start', function () {
+      assert.equal(++count, 1)
+      if (++total === EXPECTED_TOTAL) worker.close()
+    })
+    worker.on('end', function(){ count -= 1 })
+    worker.on('close', done)
+  })
   it('should allow shutdown when the redis connection is lost')
 })
