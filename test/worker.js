@@ -122,5 +122,4 @@ describe('createWorker()', function () {
     worker.on('end', function(){ count -= 1 })
     worker.on('close', done)
   })
-  it('should allow shutdown when the redis connection is lost')
 })

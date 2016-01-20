@@ -156,6 +156,4 @@ describe('createMultiWorker()', function () {
     worker.on('end', function(){ isWorking = false })
     worker.on('close', done)
   })
-
-  it('should allow shutdown when the redis connection is lost')
 })

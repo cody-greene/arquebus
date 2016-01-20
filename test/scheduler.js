@@ -47,6 +47,4 @@ describe('createScheduler()', function () {
     })
     enqueue(job, noop)
   })
-
-  it('should allow shutdown when the redis connection is lost')
 })

@@ -22,7 +22,8 @@ const worker = require('../lib/multi-worker')
   })
   .on('close', function () {
     console.log('hydra shutdown')
-    redis.quit()
+    if (redis.connected) redis.quit()
+    else redis.end(true)
   })
   .on('error', function (err, job) {
     if (job) console.log('failed', job, err.stack)

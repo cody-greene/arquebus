@@ -20,7 +20,8 @@ const foreman = require('../lib/scheduler')
   })
   .on('close', function () {
     console.log('foreman shutdown')
-    redis.quit()
+    if (redis.connected) redis.quit()
+    else redis.end(true)
   })
   .on('error', function (err) {
     console.log('foreman: ' + err.stack)
