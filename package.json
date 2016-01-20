@@ -15,17 +15,15 @@
     }
   },
   "scripts": {
+    "hydra": "node --harmony example/hydra",
     "peon": "node --harmony example/peon",
     "foreman": "node --harmony example/foreman",
     "enqueue": "node --harmony example/enqueue",
-    "test": "mocha --harmony"
-  },
-  "peerDependencies": {
-    "redis": "^2.3.0"
+    "test": "mocha --harmony --bail"
   },
   "devDependencies": {
-    "fakeredis": "~0.3.3",
+    "eslint-config": "cody-greene/eslint-config#v0.1.1",
     "mocha": "^2.2.5",
-    "eslint-config": "cody-greene/eslint-config#v0.1.1"
+    "redis": "^2.4.2"
   }
 }

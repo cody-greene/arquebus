@@ -1,32 +1,26 @@
 'use strict'; /* eslint-env mocha */
-let assert = require('assert')
-let createRedisClient = require('fakeredis').createClient
-let createSchedulerRaw = require('../lib/scheduler')
-let util = require('../lib/util')
-let noop = function(){}
+const assert = require('assert')
+const createRedisClient = require('redis').createClient
+const createScheduler= require('../lib/scheduler')
+const util = require('../lib/util')
+const noop = Function.prototype
+const REDIS_URI = process.env.REDIS_URI
+assert(REDIS_URI, 'env $REDIS_URI is undefined')
 
 describe('createScheduler()', function () {
   let redis = null
   let enqueue = null
   let foreman = null
-  let foremanClient = null
-  let idCounter = 0
 
-  beforeEach(function setup() {
-    // Need a unique id to share db between two clients
-    let id = 'scheduler-' + (++idCounter)
-    redis = createRedisClient(id)
-    foremanClient = createRedisClient(id)
+  beforeEach(function setup(done) {
+    redis = createRedisClient(REDIS_URI)
     enqueue = util.enqueue.bind(null, redis)
-    foreman = createSchedulerRaw({
-      redis: foremanClient,
-      interval: 10 // Make the tests faster by using this absurdly short time
-    })
+    redis.flushdb(done)
   })
 
   afterEach(function cleanup() {
     redis.end(true)
-    foremanClient.end(true)
+    foreman.close()
   })
 
   it("should move a delayed job when it's ready", function (done) {
@@ -34,21 +28,25 @@ describe('createScheduler()', function () {
     let actualEvents = []
     let job = {id: 1, queue:'lo', type:'easy', time: Date.now()}
     let expectedData = util.serializeJob(job, job.id)
+    foreman = createScheduler({
+      redis: redis,
+      interval: 10 // Make the tests faster by using this absurdly short time
+    })
     expectedEvents.forEach(function (name) {
       foreman.once(name, ()=> actualEvents.push(name))
     })
-    foreman.on('start', ()=> foreman.close(function () {
-      assert.deepStrictEqual(actualEvents, expectedEvents, 'emit events')
+    foreman.on('start', function(){ foreman.close() })
+    foreman.on('close', function () {
+      assert.deepStrictEqual(actualEvents, expectedEvents, 'events emitted: ' + actualEvents)
       redis.lrange(util.key(job.queue), 0, -1, function (err, list) {
         assert.ifError(err)
         assert.strictEqual(list.length, 1)
         assert.strictEqual(list[0], expectedData)
         done()
       })
-    }))
+    })
     enqueue(job, noop)
   })
 
-  it('should resume polling after connection interrupt')
-  it('should avoid double polling after connection inerrupt')
+  it('should allow shutdown when the redis connection is lost')
 })

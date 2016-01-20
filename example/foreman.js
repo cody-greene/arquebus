@@ -1,24 +1,26 @@
 'use strict';
+const redis = require('./redis-client')
 
 /**
  * Complete example of a lite-queue scheduler
  * node --harmony example/foreman.js
  */
-let foreman = require('../lib/scheduler')
+const foreman = require('../lib/scheduler')
   ({
-    redis: require('./redis-client')
+    redis: redis
   })
   .on('poll', function () {
     console.log('foreman waiting...')
   })
-  .on('start', function (job) {
-    console.log('foreman moving to active queue:', job)
+  .on('start', function () {
+    console.log('foreman moving job')
   })
   .on('end', function () {
-    console.log('foreman finished')
+    console.log('foreman moved job')
   })
   .on('close', function () {
     console.log('foreman shutdown')
+    redis.quit()
   })
   .on('error', function (err) {
     console.log('foreman: ' + err.stack)

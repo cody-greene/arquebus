@@ -2,24 +2,22 @@
 const assert = require('assert')
 const createRedisClient = require('redis').createClient
 const jobs = require('../example/jobs')
-const createWorkerRaw = require('../lib/worker')
+const createMultiWorkerRaw = require('../lib/multi-worker')
 const util = require('../lib/util')
 const noop = Function.prototype
 const REDIS_URI = process.env.REDIS_URI
 assert(REDIS_URI, 'env $REDIS_URI is undefined')
 
-/**
- * Wrap the Worker constructor with some default options
- */
+/** Wrap the Worker constructor with some default options */
 function createWorker(opt) {
-  return createWorkerRaw(Object.assign({}, {
+  return createMultiWorkerRaw(Object.assign({}, {
     jobs,
     interval: 10,
     queues: ['hi', 'md', 'lo']
   }, opt))
 }
 
-describe('createWorker()', function () {
+describe('createMultiWorker()', function () {
   let redis = null
   let enqueue = null
   let worker = null
@@ -90,7 +88,7 @@ describe('createWorker()', function () {
     {type:'operational'},
     {type:'operational', async:true}
   ].forEach(function (opt) {
-    const expectedMessage = (opt.async ? 'async ' : '') + opt.type
+    const expectedMessage = opt.async ? 'async ' + opt.type : opt.type
     it(`should capture ${expectedMessage} errors`, function (done) {
       enqueue({
         queue: 'hi',
@@ -108,6 +106,56 @@ describe('createWorker()', function () {
     })
   })
 
-  it('should accept no more than 1 job at a time')
+  it('should process more than one job at once', function (done) {
+    const EXPECTED_TOTAL = 3
+    let activeJobs = 0
+    for (let index = 0; index < EXPECTED_TOTAL; ++index)
+      enqueue({queue: 'lo', type: 'sleep', params: {duration: 50}}, noop)
+    worker = createWorker({redis})
+    worker.on('start', function () {
+      activeJobs += 1
+    })
+    worker.once('end', function () {
+      assert.equal(activeJobs, EXPECTED_TOTAL, 'start all jobs before any have ended')
+      worker.close()
+    })
+    worker.on('close', done)
+  })
+
+  it('should process no more than X jobs at a time', function (done) {
+    // duration/interval here assumes redis RTT < 5ms e.g. localhost
+    let activeJobs = 0
+    let totalJobs = 0
+    const EXPECTED_TOTAL = 5
+    const MAX_JOBS = 2
+    for (let index = 0; index < EXPECTED_TOTAL; ++index)
+      enqueue({queue: 'lo', type: 'sleep', params: {duration: 20}}, noop)
+    worker = createWorker({redis, max: MAX_JOBS})
+    worker.on('start', function () {
+      activeJobs += 1
+      assert(activeJobs <= MAX_JOBS, `${activeJobs} > ${MAX_JOBS}`)
+      if (++totalJobs === EXPECTED_TOTAL) worker.close()
+    })
+    worker.on('end', function(){ activeJobs -= 1})
+    worker.on('close', done)
+  })
+
+  it('should accept no more than one job at a time while the event-loop is lagging', function (done) {
+    const EXPECTED_TOTAL = 5
+    let totalJobs = 0
+    let isWorking = false
+    for (let index = 0; index < EXPECTED_TOTAL; ++index)
+      enqueue({queue: 'lo', type: 'busyWait', params: {duration:30}}, noop)
+    // To ensure busy status: job duration should be >= 2*HIGH_WATER
+    worker = createWorker({redis, high: 10, step: 10})
+    worker.on('start', function () {
+      assert(!isWorking, 'one job at a time!')
+      isWorking = true
+      if (++totalJobs === EXPECTED_TOTAL) worker.close()
+    })
+    worker.on('end', function(){ isWorking = false })
+    worker.on('close', done)
+  })
+
   it('should allow shutdown when the redis connection is lost')
 })

@@ -36,15 +36,6 @@ enqueue({
   else console.log('added low priority job:', id)
 })
 
-// Add a job which fails catastrophically
-enqueue({
-  queue: 'lo',
-  type: 'baz'
-}, function (err, id) {
-  if (err) console.log(err.stack)
-  else console.log('added low priority job:', id)
-})
-
 /**
  * Execute serveral async blocks in parallel, capturing any error
  * @param {function[]} tasks(err)

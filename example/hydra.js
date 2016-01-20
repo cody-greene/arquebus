@@ -3,30 +3,30 @@ const redis = require('./redis-client')
 
 /**
  * Complete example of a lite-queue worker
- * node --harmony example/peon.js
+ * node --harmony example/hydra.js
  */
-const worker = require('../lib/worker')
+const worker = require('../lib/multi-worker')
   ({
     redis: redis,
     queues: ['hi', 'md', 'lo'],
     jobs: require('./jobs')
   })
   .on('poll', function () {
-    console.log('peon waiting...')
+    console.log('hydra waiting...')
   })
   .on('start', function (job) {
-    console.log('peon start:', job.id)
+    console.log('hydra start:', job.id)
   })
   .on('end', function (job) {
-    console.log('peon end:', job.id)
+    console.log('hydra end:', job.id)
   })
   .on('close', function () {
-    console.log('peon shutdown')
+    console.log('hydra shutdown')
     redis.quit()
   })
   .on('error', function (err, job) {
     if (job) console.log('failed', job, err.stack)
-    else console.log('peon: ' + err.stack)
+    else console.log('hydra: ' + err.stack)
   })
 
 // Gracefully exit with ^c (SIGINT)

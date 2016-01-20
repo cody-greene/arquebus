@@ -1,15 +1,18 @@
 'use strict'; /* eslint-env mocha */
 let assert = require('assert')
-let createRedisClient = require('fakeredis').createClient
+let createRedisClient = require('redis').createClient
 let util = require('../lib/util')
+const REDIS_URI = process.env.REDIS_URI
+assert(REDIS_URI, 'env $REDIS_URI is undefined')
 
 describe('util.enqueue()', function () {
   let redis = null
   let enqueue = null
 
-  beforeEach(function setup() {
-    redis = createRedisClient()
+  beforeEach(function setup(done) {
+    redis = createRedisClient(REDIS_URI)
     enqueue = util.enqueue.bind(null, redis)
+    redis.flushdb(done)
   })
 
   afterEach(function cleanup() {
