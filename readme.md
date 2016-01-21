@@ -21,9 +21,8 @@ let redis = require('redis').createClient()
 #### Operational vs programmer errors
 Programmer errors in the form of exceptions thrown from a job handler will not be caught and will crash the process, unless you do something silly like `process.on('uncaughtException')`. It would be incorrect for this library to use [domains](https://nodejs.org/api/domain.html), adding complexity while attemping to handle these kinds of errors.
 
-**Taken from [error handling best practices](https://www.joyent.com/developers/node/design/errors)**
-
-Operational errors represent run-time problems experienced by correctly-written programs. These are not bugs in the program. In fact, these are usually problems with something else: the system itself, the system's configuration, the network, or a remote service:
+**Taken from [error handling best practices](https://www.joyent.com/developers/node/design/errors):**
+> Operational errors represent run-time problems experienced by correctly-written programs. These are not bugs in the program. In fact, these are usually problems with something else: the system itself, the system's configuration, the network, or a remote service:
 - failed to connect to server
 - failed to resolve hostname
 - invalid user input
@@ -32,7 +31,7 @@ Operational errors represent run-time problems experienced by correctly-written 
 - socket hang-up
 - system is out of memory
 
-Programmer errors are bugs in the program. These are things that can always be avoided by changing the code. They can never be handled properly (since by definition the code in question is broken).
+> Programmer errors are bugs in the program. These are things that can always be avoided by changing the code. They can never be handled properly (since by definition the code in question is broken).
 - tried to read property of "undefined"
 - called an asynchronous function without a callback
 - passed a "string" where an object was expected
