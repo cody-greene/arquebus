@@ -108,8 +108,9 @@ let worker = createWorker({
     /**
      * @param {function} done(err) Provided first since it must always be used
      * @param {object} params Additional options provided when the job was enqueued
+     * @param {object} job Access the job type & id
      */
-    ping(done, params) {
+    ping(done, params, job) {
       console.log('ping params:', params)
       done(new Error('not implemented'))
     }
