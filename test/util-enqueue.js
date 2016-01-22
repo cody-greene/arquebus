@@ -5,7 +5,7 @@ let util = require('../lib/util')
 const REDIS_URI = process.env.REDIS_URI
 assert(REDIS_URI, 'env $REDIS_URI is undefined')
 
-describe('util.enqueue()', function () {
+describe('util#enqueue()', function () {
   let redis = null
   let enqueue = null
 

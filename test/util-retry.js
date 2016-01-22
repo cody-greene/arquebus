@@ -2,7 +2,7 @@
 let assert = require('assert')
 let util = require('../lib/util')
 
-describe('util.retry()', function () {
+describe('util#retry()', function () {
   it('should perform the task more than once if there is no result', function (done) {
     let count = 0
     let expectedCount = 3
