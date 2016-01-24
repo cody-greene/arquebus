@@ -72,5 +72,4 @@ parallel(delayed, function (err) {
   else console.log(`added ${NUM_DELAYED} high priority delayed jobs`)
 })
 
-if (redisClient.connected) redisClient.quit()
-else redisClient.end(true)
+redisClient.quit()
