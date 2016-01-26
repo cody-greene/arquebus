@@ -12,6 +12,7 @@ describe('loadLua()', function () {
 
   beforeEach(function setup(done) {
     redis = createRedisClient(REDIS_URI)
+    redis.script('flush')
     redis.flushdb(done)
   })
 
