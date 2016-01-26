@@ -1,7 +1,7 @@
 ### arquebus
 A tiny library for background workers with redis-persisted jobs.
 - Robust & consistent error handling
-- Less code means fewer bugs (statistically)
+- Aims to stay simple; less code means fewer bugs (less test coverage is needed)
 - Requires `node --harmony` flag (rest params, spread calls)
 - Scalable number of workers
 - Optional scheduler for delayed jobs
@@ -11,33 +11,38 @@ A tiny library for background workers with redis-persisted jobs.
 Like [resque](https://github.com/taskrabbit/node-resque) but with a few key differences:
 - Javscript centric
 - Simplified API (internal optimizations make it incompatiable with resque)
-- No plugin support
+- Use Redis to its fullest, while reducing round-trips, with Lua scripts
 
-```javascript
-let arquebus = require('arquebus')
-let redis = require('redis').createClient()
-```
+Delayed jobs are for example, rather than spread around multiple lists, requiring additional round-trips to track and clean, stored in a single `Sorted Set` (sorted by time) and moved to a queue `List` atomically, with [`zremlpush.lua`](lib/zremlpush.lua). Each job is also given a cryptographically random id. Partly so you can track jobs via logging, but also to ensure the serialized job data is unique when added to a sorted set of other jobs which may have identical parameters.
+
+Workers also use [`mrpop.lua`](lib/mrpop.lua) to request a job from multiple queues in a single round-trip (and without blocking the connection like brpop).
 
 #### Operational vs programmer errors
 Programmer errors in the form of exceptions thrown from a job handler will not be caught and will crash the process, unless you do something silly like `process.on('uncaughtException')`. It would be incorrect for this library to use [domains](https://nodejs.org/api/domain.html), adding complexity while attemping to handle these kinds of errors.
 
 **Taken from [error handling best practices](https://www.joyent.com/developers/node/design/errors):**
 > Operational errors represent run-time problems experienced by correctly-written programs. These are not bugs in the program. In fact, these are usually problems with something else: the system itself, the system's configuration, the network, or a remote service:
-- failed to connect to server
-- failed to resolve hostname
-- invalid user input
-- request timeout
-- server returned a 500 response
-- socket hang-up
-- system is out of memory
-
+> - failed to connect to server
+> - failed to resolve hostname
+> - invalid user input
+> - request timeout
+> - server returned a 500 response
+> - socket hang-up
+> - system is out of memory
+>
 > Programmer errors are bugs in the program. These are things that can always be avoided by changing the code. They can never be handled properly (since by definition the code in question is broken).
-- tried to read property of "undefined"
-- called an asynchronous function without a callback
-- passed a "string" where an object was expected
-- passed an object where an IP address string was expected
+> - tried to read property of "undefined"
+> - called an asynchronous function without a callback
+> - passed a "string" where an object was expected
+> - passed an object where an IP address string was expected
 
-#### arquebus.enqueue(redis, opt, done)
+#### Usage
+```javascript
+let arquebus = require('arquebus')
+let redis = require('redis').createClient()
+```
+
+#### enqueue()
 ```javascript
 /**
  * Post a new job for an active worker to execute
@@ -55,14 +60,14 @@ Programmer errors in the form of exceptions thrown from a job handler will not b
 ```javascript
 // You may want to partially bind this:
 // enqueue = enqueue.bind(null, redis)
-enqueue(redis, {queue:'low', type:'ping'}, console.log)
-enqueue(redis, {queue:'hi', type:'ping', params: {
+arquebus.enqueue(redis, {queue:'low', type:'ping'}, console.log)
+arquebus.enqueue(redis, {queue:'hi', type:'ping', params: {
   foo: true,
   bar: 'baz'
 }, console.log)
 ```
 
-#### arquebus.createWorker(opt)
+#### createWorker()
 ```javascript
 /**
  * Scalable background job runner. One job at a time.
@@ -70,7 +75,7 @@ enqueue(redis, {queue:'hi', type:'ping', params: {
  * @param {string[]} opt.queues e.g. ['critical', 'high', 'low']
  * @param {object} opt.jobs Map of jobs types to handlers.
  *        Each handler must be of the form: `f(done, params)`
- * @param {number} opt.interval (5000) Milliseconds between polling attempts
+ * @param {number} opt.interval (5000) Milliseconds between idle polling attempts
  *
  * @return {EventEmitter}
  * @event poll When watching for new jobs
@@ -81,17 +86,18 @@ enqueue(redis, {queue:'hi', type:'ping', params: {
  */
 ```
 
-#### arquebus.createMultiWorker(opt)
+#### createMultiWorker()
 ```javascript
 /**
  * Can run multiple jobs in parallel. Will back off when the event-loop becomes too slow.
  * Same options as the standard worker, plus event-loop monitoring options:
- * @param {number?} opt.max (100) Number of jobs allowed to run in parallel
+ * @param {number?} opt.max (100) Number of jobs allowed to run in parallel.
+ *        It's more likely for jobs to be I/O bound than CPU bound
  * @param {number?} opt.high (40) High-water mark. If current lag is < 2x this value
  *        then we don't always call it "busy" e.g. with 50ms lag and a
  *        40ms high-water (1.25x), 25% of the time we will block.
  *        With 80ms lag, we will always block.
- * @param {number?} opt.step (500) Milliseconds between updates.
+ * @param {number?} opt.step (500) Milliseconds between high-water mark updates.
  *        For more sensitive checking set a lower interval.
  * @param {number?} opt.decay (3) Decay factor. Lower numbers create a smooth curve.
  *        Higher numbers lend more weight to recent observations.
@@ -100,7 +106,7 @@ enqueue(redis, {queue:'hi', type:'ping', params: {
 
 **Example**
 ```javascript
-let worker = createWorker({
+let worker = arquebus.createWorker({
   redis: require('redis').createClient(),
   queues: ['hi', 'md', 'lo'],
   jobs: {
@@ -125,13 +131,13 @@ let worker = createWorker({
  */
 ```
 
-#### arquebus.createScheduler(opt)
+#### createScheduler()
 ```javascript
 /**
  * Manages delayed jobs.
  * Running more than one scheduler on a db will have undefined results
  * @param {RedisClient} opt.redis
- * @param {number} opt.interval (5000) Milliseconds between polling attempts
+ * @param {number} opt.interval (5000) Milliseconds between idle polling attempts
  * @return {EventEmitter}
  *
  * @event poll
