@@ -64,7 +64,7 @@ arquebus.enqueue(redis, {queue:'low', type:'ping'}, console.log)
 arquebus.enqueue(redis, {queue:'hi', type:'ping', params: {
   foo: true,
   bar: 'baz'
-}, console.log)
+}}, console.log)
 ```
 
 #### createWorker()
