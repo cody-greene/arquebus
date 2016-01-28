@@ -9,8 +9,8 @@ A tiny library for background workers with redis-persisted jobs.
 - Comprehensive `example/` and test suite (omitted from npm package)
 
 Like [resque](https://github.com/taskrabbit/node-resque) but with a few key differences:
-- Javscript centric
-- Simplified API (internal optimizations make it incompatiable with resque)
+- Javascript centric
+- Simplified API (internal optimizations make it incompatible with resque)
 - Use Redis to its fullest, while reducing round-trips, with Lua scripts
 
 Delayed jobs are for example, rather than spread around multiple lists, requiring additional round-trips to track and clean, stored in a single `Sorted Set` (sorted by time) and moved to a queue `List` atomically, with [`zremlpush.lua`](lib/zremlpush.lua). Each job is also given a cryptographically random id. Partly so you can track jobs via logging, but also to ensure the serialized job data is unique when added to a sorted set of other jobs which may have identical parameters.
