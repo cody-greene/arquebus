@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cody-greene/arquebus.svg?branch=master)](https://travis-ci.org/cody-greene/arquebus) [![npm version](https://badge.fury.io/js/arquebus.svg)](https://badge.fury.io/js/arquebus)
+
 ### arquebus
 A tiny library for background workers with redis-persisted jobs.
 - Robust & consistent error handling
