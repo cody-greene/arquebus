@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-- 5.x
-- 4.x
+- v5
+- v4
 env: REDIS_URI='redis://localhost:6379'
 services:
 - redis-server
