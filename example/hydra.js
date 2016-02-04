@@ -1,16 +1,17 @@
-'use strict';
+'use strict'
+/* eslint no-console: 0 */
 const redis = require('./redis-client')
+const createMultiWorker = require('../lib/multi-worker')
 
 /**
  * Complete example of a MultiWorker
  * node example/hydra.js
  */
-const worker = require('../lib/multi-worker')
-  ({
-    redis: redis,
-    queues: ['hi', 'md', 'lo'],
-    jobs: require('./jobs')
-  })
+const worker = createMultiWorker({
+  redis: redis,
+  queues: ['hi', 'md', 'lo'],
+  jobs: require('./jobs')
+})
   .on('poll', function () {
     console.log('hydra waiting...')
   })

@@ -1,4 +1,4 @@
-'use strict'; /* eslint-env mocha */
+'use strict' /* eslint-env mocha */
 const assert = require('assert')
 const createRedisClient = require('redis').createClient
 const createScheduler= require('../lib/scheduler')
@@ -26,7 +26,7 @@ describe('createScheduler()', function () {
   it("should move a delayed job when it's ready", function (done) {
     let expectedEvents = ['poll', 'start', 'end', 'close']
     let actualEvents = []
-    let job = {id: 1, queue:'lo', type:'easy', time: Date.now()}
+    let job = {id: 1, queue: 'lo', type: 'easy', time: Date.now()}
     let expectedData = util.serializeJob(job, job.id)
     foreman = createScheduler({
       redis: redis,
@@ -35,7 +35,7 @@ describe('createScheduler()', function () {
     expectedEvents.forEach(function (name) {
       foreman.once(name, ()=> actualEvents.push(name))
     })
-    foreman.on('start', function(){ foreman.close() })
+    foreman.on('start', function (){ foreman.close() })
     foreman.on('close', function () {
       assert.deepStrictEqual(actualEvents, expectedEvents, 'events emitted: ' + actualEvents)
       redis.lrange(util.key(job.queue), 0, -1, function (err, list) {

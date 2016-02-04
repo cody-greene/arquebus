@@ -1,4 +1,4 @@
-'use strict'; /* eslint-env mocha */
+'use strict' /* eslint-env mocha */
 let assert = require('assert')
 let createRedisClient = require('redis').createClient
 let util = require('../lib/util')
@@ -20,7 +20,7 @@ describe('util#enqueue()', function () {
   })
 
   it('should return a job id', function (done) {
-    enqueue({queue:'lo', type:'foo'}, function (err, id) {
+    enqueue({queue: 'lo', type: 'foo'}, function (err, id) {
       assert.ifError(err)
       assert.ok(id, 'got a job id')
       done()
@@ -28,7 +28,7 @@ describe('util#enqueue()', function () {
   })
 
   it('should add a new job', function (done) {
-    let opt = {queue:'lo', type:'easy'}
+    let opt = {queue: 'lo', type: 'easy'}
     enqueue(opt, function (err, id) {
       let expectedData = util.serializeJob(opt, id)
       assert.ifError(err)
@@ -42,7 +42,7 @@ describe('util#enqueue()', function () {
   })
 
   it('should add a new delayed job', function (done) {
-    let opt = {queue:'lo', type:'easy', time: Date.now()}
+    let opt = {queue: 'lo', type: 'easy', time: Date.now()}
     enqueue(opt, function (err, id) {
       let expectedData = util.serializeJob(opt, id)
       assert.ifError(err)

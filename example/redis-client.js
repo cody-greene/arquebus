@@ -1,4 +1,5 @@
-'use strict';
+'use strict'
+/* eslint no-console: 0 */
 const REDIS_URI = process.env.REDIS_URI
 if (!REDIS_URI) throw new Error('env $REDIS_URI is undefined')
 let wasConnected = false

@@ -1,16 +1,17 @@
-'use strict';
+'use strict'
+/* eslint no-console: 0 */
 const redis = require('./redis-client')
+const createWorker = require('../lib/worker')
 
 /**
  * Complete example of a Worker
  * node example/peon.js
  */
-const worker = require('../lib/worker')
-  ({
-    redis: redis,
-    queues: ['hi', 'md', 'lo'],
-    jobs: require('./jobs')
-  })
+const worker = createWorker({
+  redis: redis,
+  queues: ['hi', 'md', 'lo'],
+  jobs: require('./jobs')
+})
   .on('poll', function () {
     console.log('peon waiting...')
   })

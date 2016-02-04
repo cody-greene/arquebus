@@ -1,4 +1,4 @@
-'use strict'; /* eslint-env mocha */
+'use strict' /* eslint-env mocha */
 const assert = require('assert')
 const createRedisClient = require('redis').createClient
 const loadLua = require('../lib/load-lua')

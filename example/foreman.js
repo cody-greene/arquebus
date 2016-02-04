@@ -1,14 +1,13 @@
-'use strict';
+'use strict'
+/* eslint no-console: 0 */
 const redis = require('./redis-client')
+const createScheduler = require('../lib/scheduler')
 
 /**
  * Complete example of a Scheduler
  * node example/foreman.js
  */
-const foreman = require('../lib/scheduler')
-  ({
-    redis: redis
-  })
+const foreman = createScheduler({redis})
   .on('poll', function () {
     console.log('foreman waiting...')
   })

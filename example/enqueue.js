@@ -1,5 +1,5 @@
-'use strict';
-
+'use strict'
+/* eslint no-console: 0 */
 /**
  * node example/enqueue.js
  */
@@ -49,7 +49,8 @@ function parallel(tasks, done) {
     else if (err) {
       isDone = true
       done(err)
-    } else if (tasks.length === ++count) {
+    }
+    else if (tasks.length === ++count) {
       isDone = true
       done()
     }

@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 module.exports = {
   easy(done) {
     setTimeout(done, 250)
@@ -20,7 +20,7 @@ module.exports = {
     let tstart = Date.now()
     if (!Number.isInteger(params.duration) || params.duration < 1)
       done(new TypeError('params.duration should be a integer > 0'))
-    while(true) if (Date.now() - tstart > params.duration) break
+    while (true) if (Date.now() - tstart > params.duration) break
     done()
   },
   /**

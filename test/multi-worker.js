@@ -1,4 +1,4 @@
-'use strict'; /* eslint-env mocha */
+'use strict' /* eslint-env mocha */
 const assert = require('assert')
 const createRedisClient = require('redis').createClient
 const jobs = require('../example/jobs')
@@ -35,13 +35,13 @@ describe('createMultiWorker()', function () {
 
   it('should process a well-defined job', function (done) {
     const expectedEvents = ['poll', 'start', 'end', 'close']
-    let actualEvents  = []
+    let actualEvents = []
     // If the worker constructor is moved to beforeEach() then we may not catch the 'poll' event
     worker = createWorker({redis})
     expectedEvents.forEach(function (name) {
       worker.once(name, ()=> actualEvents.push(name))
     })
-    worker.on('start', function(){ worker.close() })
+    worker.on('start', function (){ worker.close() })
     worker.on('close', function () {
       // Order is important! "close" should always be the last event
       // This also tests the worker to complete a job before closing
@@ -52,7 +52,7 @@ describe('createMultiWorker()', function () {
         done()
       })
     })
-    enqueue({queue:'lo', type:'nightmare'}, noop)
+    enqueue({queue: 'lo', type: 'nightmare'}, noop)
   })
 
   it('should process jobs from different queues', function (done) {
@@ -64,13 +64,13 @@ describe('createMultiWorker()', function () {
       if (expectedQueues.length === 0) worker.close()
     })
     worker.on('close', done)
-    expectedQueues.forEach(queue => enqueue({queue, type:'nightmare'}, noop))
+    expectedQueues.forEach(queue => enqueue({queue, type: 'nightmare'}, noop))
   })
 
   it('should process jobs in order (within a queue)', function (done) {
     let expectedJobs = []
     for (let index = 0; index < 4; ++index) {
-      let job = {queue:'lo', type:'nightmare', params:index}
+      let job = {queue: 'lo', type: 'nightmare', params: index}
       expectedJobs.push(job)
       enqueue(job, noop)
     }
@@ -85,8 +85,8 @@ describe('createMultiWorker()', function () {
   // Operational vs Programmer error:
   // https://www.joyent.com/developers/node/design/errors
   ;[
-    {type:'operational'},
-    {type:'operational', async:true}
+    {type: 'operational'},
+    {type: 'operational', async: true}
   ].forEach(function (opt) {
     const expectedMessage = opt.async ? 'async ' + opt.type : opt.type
     it(`should capture ${expectedMessage} errors`, function (done) {
@@ -136,7 +136,7 @@ describe('createMultiWorker()', function () {
       assert(activeJobs <= MAX_JOBS, `${activeJobs} > ${MAX_JOBS}`)
       if (++totalJobs === EXPECTED_TOTAL) worker.close()
     })
-    worker.on('end', function(){ activeJobs -= 1})
+    worker.on('end', function (){ activeJobs -= 1 })
     worker.on('close', done)
   })
 
@@ -145,7 +145,7 @@ describe('createMultiWorker()', function () {
     let totalJobs = 0
     let isWorking = false
     for (let index = 0; index < EXPECTED_TOTAL; ++index)
-      enqueue({queue: 'lo', type: 'busyWait', params: {duration:30}}, noop)
+      enqueue({queue: 'lo', type: 'busyWait', params: {duration: 30}}, noop)
     // To ensure busy status: job duration should be >= 2*HIGH_WATER
     worker = createWorker({redis, high: 10, step: 10})
     worker.on('start', function () {
@@ -153,7 +153,7 @@ describe('createMultiWorker()', function () {
       isWorking = true
       if (++totalJobs === EXPECTED_TOTAL) worker.close()
     })
-    worker.on('end', function(){ isWorking = false })
+    worker.on('end', function (){ isWorking = false })
     worker.on('close', done)
   })
 })

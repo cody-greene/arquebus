@@ -1,4 +1,4 @@
-'use strict'; /* eslint-env mocha */
+'use strict' /* eslint-env mocha */
 let assert = require('assert')
 let util = require('../lib/util')
 
