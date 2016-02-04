@@ -17,11 +17,11 @@
     }
   },
   "scripts": {
-    "hydra": "node --harmony example/hydra",
-    "peon": "node --harmony example/peon",
-    "foreman": "node --harmony example/foreman",
-    "enqueue": "node --harmony example/enqueue",
-    "test": "mocha --harmony --bail"
+    "hydra": "node example/hydra",
+    "peon": "node example/peon",
+    "foreman": "node example/foreman",
+    "enqueue": "node example/enqueue",
+    "test": "mocha --bail"
   },
   "devDependencies": {
     "eslint-config": "cody-greene/eslint-config#v0.1.1",

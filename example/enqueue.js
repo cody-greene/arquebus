@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * node --harmony example/enqueue.js
+ * node example/enqueue.js
  */
 let redisClient = require('./redis-client')
 let enqueue = require('../lib').enqueue.bind(null, redisClient)

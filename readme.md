@@ -4,7 +4,6 @@
 A tiny library for background workers with redis-persisted jobs.
 - Robust & consistent error handling
 - Aims to stay simple; less code means fewer bugs (less test coverage is needed)
-- Requires `node --harmony` flag (rest params, spread calls)
 - Scalable number of workers
 - Optional scheduler for delayed jobs
 - Bring your own redis connection

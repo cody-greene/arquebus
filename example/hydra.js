@@ -3,7 +3,7 @@ const redis = require('./redis-client')
 
 /**
  * Complete example of a MultiWorker
- * node --harmony example/hydra.js
+ * node example/hydra.js
  */
 const worker = require('../lib/multi-worker')
   ({
